@@ -60,7 +60,9 @@
   ],
   "dependencies": {
     "global": "^4.3.2",
-    "video.js": "^6 || ^7"
+    "video.js": "^6 || ^7",
+    "videojs-contrib-ads": "^6.9.0",
+    "videojs-ima": "^1.11.0"
   },
   "generator-videojs-plugin": {
     "version": "7.6.1"
