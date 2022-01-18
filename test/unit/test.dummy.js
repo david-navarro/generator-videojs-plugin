@@ -4,7 +4,7 @@ import QUnit from 'qunit';
 import sinon from 'sinon';
 import videojs from 'video.js';
 
-import plugin from '../src/plugin';
+import plugin from '../../src/plugin';
 
 const Player = videojs.getComponent('Player');
 
@@ -15,7 +15,7 @@ QUnit.test('the environment is sane', function(assert) {
   assert.strictEqual(typeof plugin, 'function', 'plugin is a function');
 });
 
-QUnit.module('<%= pluginName %>', {
+QUnit.module('videojs-ra', {
 
   beforeEach() {
 
@@ -41,18 +41,18 @@ QUnit.test('registers itself with video.js', function(assert) {
   assert.expect(2);
 
   assert.strictEqual(
-    typeof Player.prototype.<%= pluginFunctionName %>,
+    typeof Player.prototype.ra,
     'function',
-    '<%= pluginName %> plugin was registered'
+    'videojs-ra plugin was registered'
   );
 
-  this.player.<%= pluginFunctionName %>();
+  this.player.ra();
 
   // Tick the clock forward enough to trigger the player to be "ready".
   this.clock.tick(1);
 
   assert.ok(
-    this.player.hasClass('<%= className %>'),
+    this.player.hasClass('vjs-ra'),
     'the plugin adds a class to the player'
   );
 });

@@ -1,67 +1,117 @@
 {
-  "name": "generator-videojs-plugin",
+  "name": "videojs-ra",
   "version": "8.0.0",
-  "description": "A Yeoman generator for Video.js plugins",
-  "license": "Apache-2.0",
-  "main": "generators/app/index.js",
+  "description": "Richaudience plugin for videojs",
+  "license": "UNLICENSED",
+  "main": "dist/videojs-ra.js",
   "engines": {
     "node": ">=14",
     "npm": ">=6"
   },
-  "repository": "videojs/generator-videojs-plugin",
-  "author": {
-    "name": "Pat O'Neill",
-    "email": "pgoneill@gmail.com",
-    "url": "https://github.com/misteroneill"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/videojs/generator-videojs-plugin.git"
   },
+  "author": "navarro <david.navarro@richaudience.com>",
   "vjsstandard": {
+    "jsdoc": false,
     "ignore": [
+      "dist",
       "docs",
-      "generators/app/templates"
+      "test/dist",
+      "examples"
     ]
   },
   "scripts": {
+    "prebuild": "npm run clean",
+    "build": "npm-run-all -s clean -p build:*",
+    "build:css": "npm-run-all build:css:sass build:css:copy",
+    "build:css:copy": "shx cp dist/videojs-ra.css dist/videojs.ra.css",
+    "build:css:sass": "node-sass src/plugin.scss dist/videojs-ra.css --output-style=compressed --linefeed=lf",
+    "build:js": "npm-run-all build:js:rollup build:js:copy build:js:copy-min",
+    "build:js:copy": "shx cp dist/videojs-ra.js dist/videojs.ra.js",
+    "build:js:copy-min": "shx cp dist/videojs-ra.js dist/videojs.ra.js",
+    "build:js:rollup": "rollup -c scripts/rollup.config.js",
+    "build:js:uglify": "uglifyjs dist/videojs-ra.js --comments --mangle --compress  -o dist/videojs-ra.min.js",
+    "clean": "shx rm -rf ./dist ./test/dist ./cjs ./es && shx mkdir -p ./dist ./test/dist ./cjs ./es",
+    "docs": "npm-run-all docs:*",
+    "docs:api": "jsdoc src -r -d docs/api",
+    "docs:toc": "doctoc --notitle README.md",
+    "generate-pkg-lock": "node scripts/generate-pkg-lock.js && git add plugin/package-lock.json",
     "lint": "vjsstandard",
+    "server": "karma start scripts/karma.conf.js --singleRun=false --auto-watch",
+    "start": "npm-run-all -p server watch",
     "pretest": "npm run lint",
     "test": "npm-run-all test:*",
-    "test:unit": "mocha test/*.test.js",
-    "test:integration": "node scripts/run-integration-tests.js",
-    "test:integration-lib": "node scripts/run-integration-tests.js --library",
-    "test:verify": "vjsverify --skip-es-check --verbose",
-    "preversion": "npm-run-all generate-pkg-lock test",
-    "generate-pkg-lock": "node scripts/generate-pkg-lock.js && git add plugin/package-lock.json",
-    "version": "is-prerelease || npm run update-changelog && git add CHANGELOG.md",
+    "posttest": "shx cat test/dist/coverage/text.txt",
+    "test:unit": "karma start scripts/karma.conf.js",
+    "test:verify": "vjsverify --verbose",
     "update-changelog": "conventional-changelog -p videojs -i CHANGELOG.md -s",
-    "prepublishOnly": "npm run test:verify"
-  },
-  "lint-staged": {
-    "**/*.js": "vjsstandard --fix",
-    "(README.md|docs/conventions.md)": "doctoc --notitle"
+    "preversion": "npm test",
+    "version": "is-prerelease || npm run update-changelog && git add CHANGELOG.md",
+    "watch": "npm-run-all -p watch:*",
+    "watch:css": "npm run build:css:sass -- -w",
+    "watch:js": "npm run build:js:rollup -- -w",
+    "prepublishOnly": "npm-run-all build test:verify"
   },
   "keywords": [
-    "yeoman-generator",
     "videojs",
     "videojs-plugin"
   ],
   "dependencies": {
-    "lodash": "^4.17.21",
-    "please-upgrade-node": "^3.2.0",
-    "sync-request": "^6.1.0",
-    "yeoman-environment": "^3.4.1",
-    "yeoman-generator": "^5.3.0"
+    "global": "^4.3.2",
+    "video.js": "^6 || ^7"
+  },
+  "generator-videojs-plugin": {
+    "version": "7.6.1"
   },
   "devDependencies": {
-    "is-ci": "^3.0.0",
-    "mocha": "^8.4.0",
-    "@videojs/generator-helpers": "~3.0.0",
-    "videojs-generator-verify": "~4.0.0",
-    "videojs-standard": "^9.0.0",
-    "yeoman-assert": "^3.1.1",
-    "yeoman-test": "^6.1.0"
+    "@videojs/generator-helpers": "~1.0.0",
+    "karma": "^4.0.1",
+    "lodash": "^4.17.15",
+    "node-sass": "^4.5.3",
+    "rollup": "1.1.0",
+    "sinon": "^2.2.0",
+    "videojs-generate-karma-config": "~5.1.0",
+    "videojs-generate-rollup-config": "~3.1.0",
+    "videojs-generator-verify": "~1.2.0",
+    "videojs-standard": "^8.0.6"
   },
+  "files": [
+    "CONTRIBUTING.md",
+    "cjs/",
+    "dist/",
+    "docs/",
+    "es/",
+    "index.html",
+    "scripts/",
+    "src/",
+    "test/"
+  ],
+  "greenkeeper": {
+    "ignore": [
+      "sinon",
+      "rollup",
+      "rollup-plugin-commonjs"
+    ]
+  },
+  "browserslist": [
+    "defaults",
+    "ie 11"
+  ],
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.js": [
+      "vjsstandard --fix",
+      "git add"
+    ],
+    "README.md": [
+      "doctoc --notitle",
+      "git add"
+    ]
   }
 }

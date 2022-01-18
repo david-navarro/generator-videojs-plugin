@@ -1,18 +1,10 @@
 # CONTRIBUTING
 
-<% if (!isPrivate) { -%>
-We welcome contributions from everyone!
-
-<% } -%>
 ## Getting Started
 
-Make sure you have Node.js 14 or higher and npm installed.
+Make sure you have Node.js 8 or higher and npm installed.
 
-<% if (!isPrivate) { -%>
-1. Fork this repository and clone your fork
-<% } else { -%>
 1. Clone this repository
-<% } -%>
 1. Install dependencies: `npm install`
 1. Run a development server: `npm start`
 
